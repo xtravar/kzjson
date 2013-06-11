@@ -234,9 +234,7 @@ KZ_INLINE void writeString(KZJSONWriter *self, NSString *value, BOOL escaped);
 
 
 KZ_INLINE void writeData(KZJSONWriter* self, const void *data, int length) {
-#ifdef DEBUG
     SEL _cmd = @selector(writeData:);
-#endif
     int writeLength = [self->_stream write:data maxLength:length];
     NSAssert(writeLength == length, @"stream write failed");
 }
