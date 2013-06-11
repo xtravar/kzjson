@@ -73,11 +73,10 @@ KZ_INLINE void writeString(KZJSONWriter *self, NSString *value, BOOL escaped);
 #pragma mark Helper methods
 
 -(void)_writeStartValue:(BOOL)string {
-    NSAssert(_expectsValue, @"value unexpected at this point in JSON");
     if(_insideString) {
-        writeData(self, "\"", 1);
         [self _writeEndValue];
     }
+    NSAssert(_expectsValue, @"value unexpected at this point in JSON");
     if(_requiresComma) {
         writeData(self, ",", 1);
     }
@@ -88,6 +87,11 @@ KZ_INLINE void writeString(KZJSONWriter *self, NSString *value, BOOL escaped);
 }
 
 -(void)_writeEndValue {
+    if(_insideString) {
+        writeData(self, "\"", 1);
+        _insideString = NO;
+    }
+    
     KZJSONNodeType type = topNode(self);
     switch(type) {
         case KZJSONNodeTypeArray:
@@ -99,16 +103,15 @@ KZ_INLINE void writeString(KZJSONWriter *self, NSString *value, BOOL escaped);
         default:
             break;
     }
-    if(_insideString) {
-        writeData(self, "\"", 1);
-        _insideString = NO;
-    }
 }
 
 #pragma mark -
 
 #pragma mark Structures
 -(void)writeKey:(NSString*)string {
+    if(_insideString) {
+        [self _writeEndValue];
+    }
     NSAssert(topNode(self) == KZJSONNodeTypeObject, @"keys may only be written in dictionaries in JSON");
     if(_requiresComma) {
         writeData(self, ",", 1);
@@ -131,6 +134,9 @@ KZ_INLINE void writeString(KZJSONWriter *self, NSString *value, BOOL escaped);
 
 -(void)writeEndObject {
     NSAssert(topNode(self) == KZJSONNodeTypeObject, @"end of object does not match beginning");
+    if(_insideString) {
+        [self _writeEndValue];
+    }
     writeData(self, "}", 1);
     _nodeCount--;
     [self _writeEndValue];
@@ -146,6 +152,9 @@ KZ_INLINE void writeString(KZJSONWriter *self, NSString *value, BOOL escaped);
 
 -(void)writeEndArray {
     NSAssert(topNode(self) == KZJSONNodeTypeArray, @"end of array does not match beginning");
+    if(_insideString) {
+        [self _writeEndValue];
+    }
     writeData(self, "]", 1);
     _nodeCount--;
     [self _writeEndValue];
