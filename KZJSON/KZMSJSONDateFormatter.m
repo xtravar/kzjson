@@ -36,7 +36,7 @@
 
 -(BOOL)getObjectValue:(out id *)obj forString:(NSString *)string errorDescription:(out NSString **)error {
     NSString *prefix = nil;
-    NSString *suffix = nil;
+    // NSString *suffix = nil;
     if([string hasPrefix:kEscapedPrefix]) {
         prefix = kEscapedPrefix;
     } else if(!_shouldEnforceEscapedInput && [string hasPrefix:kUnescapedPrefix]) {
@@ -49,9 +49,9 @@
     }
     
     if([string hasSuffix:kEscapedSuffix]) {
-        suffix = kEscapedSuffix;
+        // suffix = kEscapedSuffix;
     } else if(!_shouldEnforceEscapedInput && [string hasSuffix:kUnescapedSuffix]) {
-        suffix = kUnescapedSuffix;
+        // suffix = kUnescapedSuffix;
     } else {
         if(error) {
             *error = @"Unexpected format - suffix does not match";
