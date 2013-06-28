@@ -25,7 +25,6 @@ KZ_INLINE void writeString(KZJSONWriter *self, NSString *value, BOOL escaped);
     int _nodeCount;
     KZJSONNodeType _nodeStack[kMaxNodeLevel];
     
-    BOOL _expectsValue;
     BOOL _requiresComma;
     BOOL _insideString;
 }
@@ -40,7 +39,6 @@ KZ_INLINE void writeString(KZJSONWriter *self, NSString *value, BOOL escaped);
     if(self) {
         _stream = stream;
         _nodeStack[0] = KZJSONNodeTypeInvalid;
-        _expectsValue = YES;
         _requiresComma = NO;
     }
     return self;
@@ -76,7 +74,7 @@ KZ_INLINE void writeString(KZJSONWriter *self, NSString *value, BOOL escaped);
     if(_insideString) {
         [self _writeEndValue];
     }
-    NSAssert(_expectsValue, @"value unexpected at this point in JSON");
+    
     if(_requiresComma) {
         writeData(self, ",", 1);
     }
@@ -95,7 +93,6 @@ KZ_INLINE void writeString(KZJSONWriter *self, NSString *value, BOOL escaped);
     KZJSONNodeType type = topNode(self);
     switch(type) {
         case KZJSONNodeTypeArray:
-            _expectsValue = YES;
         case KZJSONNodeTypeObject:
             _requiresComma = YES;
             break;
@@ -122,7 +119,6 @@ KZ_INLINE void writeString(KZJSONWriter *self, NSString *value, BOOL escaped);
     writeData(self, "\"", 1);
     writeData(self, ":", 1);
     _requiresComma = NO;
-    _expectsValue = YES;
 }
 
 -(void)writeStartObject {
@@ -147,7 +143,6 @@ KZ_INLINE void writeString(KZJSONWriter *self, NSString *value, BOOL escaped);
     _nodeStack[_nodeCount++] = KZJSONNodeTypeArray;
     writeData(self, "[", 1);
     _requiresComma = NO;
-    _expectsValue = YES;
 }
 
 -(void)writeEndArray {

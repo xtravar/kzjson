@@ -21,15 +21,11 @@ KZ_INLINE NSString *_readString(__unsafe_unretained KZJSONTextReader *stream);
 KZ_INLINE BOOL _readHexChar(__unsafe_unretained KZJSONTextReader *stream, unichar* ch);
 KZ_INLINE BOOL _readEscapedChar(__unsafe_unretained KZJSONTextReader *stream, unichar* c);
 
-#if DEBUG
 #define AssertReadString(str) { \
     NSString *str2 = [_stream getStringOfLength:str.length]; \
     NSAssert(str2, @"unexpected end of stream (expected %@", str); \
     NSAssert([str isEqualToString:str2], @"unexpected string: %@ (expected %@)", str2, str); \
 }
-#else
-#define AssertReadString(str)
-#endif
 
 #define AssertReadChar(ch) { \
     unichar ch2 = 0; \
